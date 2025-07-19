@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ showModal: {{ 'true' if prediction is not none else 'false' }} }" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservation Prediction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    @keyframes fadeScale {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .fade-in-scale {
+      animation: fadeScale 0.4s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-6">
+  <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl p-10">
+    <h2 class="text-3xl font-bold text-center text-blue-400 mb-8">Hotel Reservation Prediction</h2>
+
+    <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Form fields (same as before) -->
+      <div>
+        <label for="lead_time" class="block mb-1 text-sm">Lead Time</label>
+        <input type="number" id="lead_time" name="lead_time" required class="w-full p-3 rounded-md bg-gray-700">
+      </div>
+
+      <div>
+        <label for="no_of_special_request" class="block mb-1 text-sm">Special Requests</label>
+        <input type="number" id="no_of_special_request" name="no_of_special_request" required class="w-full p-3 rounded-md bg-gray-700">
+      </div>
+
+      <div>
+        <label for="avg_price_per_room" class="block mb-1 text-sm">Avg Price Per Room</label>
+        <input type="number" id="avg_price_per_room" name="avg_price_per_room" required class="w-full p-3 rounded-md bg-gray-700">
+      </div>
+
+      <div>
+        <label for="arrival_month" class="block mb-1 text-sm">Arrival Month</label>
+        <select id="arrival_month" name="arrival_month" required class="w-full p-3 rounded-md bg-gray-700">
+          {% for i, m in [(1,'Jan'),(2,'Feb'),(3,'Mar'),(4,'Apr'),(5,'May'),(6,'Jun'),(7,'Jul'),(8,'Aug'),(9,'Sep'),(10,'Oct'),(11,'Nov'),(12,'Dec')] %}
+            <option value="{{ i }}">{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="arrival_date" class="block mb-1 text-sm">Arrival Date</label>
+        <select id="arrival_date" name="arrival_date" required class="w-full p-3 rounded-md bg-gray-700">
+          {% for i in range(1, 32) %}
+            <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="market_segment_type" class="block mb-1 text-sm">Market Segment</label>
+        <select id="market_segment_type" name="market_segment_type" required class="w-full p-3 rounded-md bg-gray-700">
+          <option value="0">Aviation</option>
+          <option value="1">Complimentary</option>
+          <option value="2">Corporate</option>
+          <option value="3">Offline</option>
+          <option value="4">Online</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="no_of_week_nights" class="block mb-1 text-sm">Week Nights</label>
+        <input type="number" id="no_of_week_nights" name="no_of_week_nights" required class="w-full p-3 rounded-md bg-gray-700">
+      </div>
+
+      <div>
+        <label for="no_of_weekend_nights" class="block mb-1 text-sm">Weekend Nights</label>
+        <input type="number" id="no_of_weekend_nights" name="no_of_weekend_nights" required class="w-full p-3 rounded-md bg-gray-700">
+      </div>
+
+      <div>
+        <label for="type_of_meal_plan" class="block mb-1 text-sm">Meal Plan</label>
+        <select id="type_of_meal_plan" name="type_of_meal_plan" required class="w-full p-3 rounded-md bg-gray-700">
+          <option value="0">Meal Plan 1</option>
+          <option value="1">Meal Plan 2</option>
+          <option value="2">Meal Plan 3</option>
+          <option value="3">Not Selected</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="room_type_reserved" class="block mb-1 text-sm">Room Type</label>
+        <select id="room_type_reserved" name="room_type_reserved" required class="w-full p-3 rounded-md bg-gray-700">
+          <option value="0">Room Type 1</option>
+          <option value="1">Room Type 2</option>
+          <option value="2">Room Type 3</option>
+          <option value="3">Room Type 4</option>
+          <option value="4">Room Type 5</option>
+          <option value="5">Room Type 6</option>
+          <option value="6">Room Type 7</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2">
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg mt-4 hover:shadow-lg transition duration-300">
+          Predict
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal -->
+  <div x-show="showModal" x-transition class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-xl max-w-md w-full text-center fade-in-scale">
+      <h3 class="text-xl font-bold mb-4 text-blue-400">Prediction Result</h3>
+      <p class="text-lg mb-4">
+        {% if prediction == 0 %}
+          ❌ The customer is <span class="text-red-400 font-semibold">likely to cancel</span> the reservation.
+        {% else %}
+          ✅ The customer is <span class="text-green-400 font-semibold">likely to confirm</span> the reservation.
+        {% endif %}
+      </p>
+      <button @click="showModal = false"
+        class="mt-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 text-white rounded-md transition duration-300">
+        Close
+      </button>
+    </div>
+  </div>
+</body>
+</html>
