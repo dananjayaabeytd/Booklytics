@@ -31,6 +31,19 @@ pipeline{
             }
         }
 
+        stage('Test GCP Key') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh '''
+                    echo "Using GCP Key: ${GOOGLE_APPLICATION_CREDENTIALS}"
+                    gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+                    gcloud config set project ${GCP_PROJECT}
+                    gcloud storage buckets list
+                    '''
+                }
+            }
+        }
+
 
         stage('Building and Pushing Docker Image to GCR'){
             steps{
