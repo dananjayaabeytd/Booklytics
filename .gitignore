@@ -4,3 +4,5 @@ logs/
 artifacts/models/
 artifacts/processed/
 artifacts/raw/
+notebook/random_forest.pkl
+notebook/train.csv
