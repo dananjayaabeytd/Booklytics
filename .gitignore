@@ -1,3 +1,6 @@
 venv
 __pycache__
 logs/
+artifacts/models/
+artifacts/processed/
+artifacts/raw/
